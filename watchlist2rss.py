@@ -26,14 +26,14 @@ feed.title(page_title)
 feed.id(watchlist_url)
 feed.link(href=watchlist_url, rel='alternate')
 feed.description(page_title + ' from Letterboxd')
-feed.author({'name': 'John Doe',
-             'email': 'john@example.de'})
 
 posters = soup.findAll('div', attrs={'class', 'poster'})
 match_imdb = re.compile('^http://www.imdb.com')
 
 if len(posters) > feedlen:
     posters = posters[:feedlen]
+
+print('Adding %i movies ...' % len(posters))
 
 for movie in posters:
 
@@ -43,9 +43,12 @@ for movie in posters:
     movie_title = movie_soup.find('meta', attrs={'property': 'og:title'}).attrs['content']
     movie_link = movie_soup.find('a', attrs={'href': match_imdb}).attrs['href']
     movie_link = movie_link[:-11]
+    movie_description = movie_soup.find('div', attrs={'class': 'truncate'})
+    movie_description = movie_description.text.strip()
 
     item = feed.add_item()
     item.title(movie_title)
+    item.description(movie_description)
     item.link(href=movie_link, rel='alternate')
     item.guid(movie_link)
 
