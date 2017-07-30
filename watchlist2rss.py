@@ -13,13 +13,17 @@ feedlen = c['default'].getint('feed_length', 100)
 watchlist_url = c['default'].get('watchlist_url', 'https://letterboxd.com/janwh/watchlist/')
 output_file = c['default'].get('output_file', 'feed.xml')
 base_url = 'https://letterboxd.com/'
+page_title = 'The Dude\'s Watchlist'
 
 s = session()
 r = s.get(watchlist_url)
 
 soup = BeautifulSoup(r.text, 'html.parser')
 
-page_title = soup.find('meta', attrs={'property': 'og:title'}).attrs['content']
+
+watchlist_title = soup.find('meta', attrs={'property': 'og:title'})
+if watchlist_title is not None:
+    page_title = watchlist_title.attrs['content']
 
 feed = FeedGenerator()
 feed.title(page_title)
@@ -54,4 +58,5 @@ for movie in posters:
 
     print('Added movie', movie_title)
 
-feed.rss_file(output_file)
+if len(posters) > 0:
+    feed.rss_file(output_file)
