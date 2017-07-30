@@ -34,7 +34,9 @@ feed.description(page_title + ' from Letterboxd')
 posters = soup.findAll('div', attrs={'class', 'poster'})
 match_imdb = re.compile('^http://www.imdb.com')
 
-if len(posters) > feedlen:
+if len(posters) == 0:
+    return
+elif len(posters) > feedlen:
     posters = posters[:feedlen]
 
 print('Adding %i movies ...' % len(posters))
@@ -58,5 +60,4 @@ for movie in posters:
 
     print('Added movie', movie_title)
 
-if len(posters) > 0:
-    feed.rss_file(output_file)
+feed.rss_file(output_file)
