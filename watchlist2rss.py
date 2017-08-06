@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 from configparser import ConfigParser
 import re
+match_imdb = re.compile('^http://www.imdb.com')
 
 c = ConfigParser()
 c.read('config.ini')
@@ -37,7 +38,6 @@ def main():
                 page_title = watchlist_title.attrs['content']
 
         posters = soup.findAll('div', attrs={'class', 'poster'})
-        match_imdb = re.compile('^http://www.imdb.com')
 
         if len(posters) == 0:
             print('No more movies on page %i' % (page, ))
@@ -52,10 +52,12 @@ def main():
 
             movie_page = s.get(base_url + movie.attrs['data-film-slug'])
             movie_soup = BeautifulSoup(movie_page.text, 'html.parser')
-
-            movie_title = movie_soup.find('meta', attrs={'property': 'og:title'}).attrs['content']
-            movie_link = movie_soup.find('a', attrs={'href': match_imdb}).attrs['href']
-            movie_link = movie_link[:-11]
+            try:
+                movie_title = movie_soup.find('meta', attrs={'property': 'og:title'}).attrs['content']
+                movie_link = movie_soup.find('a', attrs={'href': match_imdb}).attrs['href']
+                movie_link = movie_link[:-11]
+            except AttributeError:
+                print('Parsing failed')
             movie_description = movie_soup.find('div', attrs={'class': 'truncate'})
             movie_description = movie_description.text.strip()
 
