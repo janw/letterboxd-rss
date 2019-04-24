@@ -1,14 +1,15 @@
-#!/usr/bin/env python3
+from os import path
+import re
+from configparser import ConfigParser
 
 from requests import session
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
-from configparser import ConfigParser
-import re
 match_imdb = re.compile('^http://www.imdb.com')
 
+ROOT_PATH = path.dirname(path.realpath(__file__))
 c = ConfigParser()
-c.read('config.ini')
+c.read(path.join(ROOT_PATH, "config.ini"))
 
 
 def main():
