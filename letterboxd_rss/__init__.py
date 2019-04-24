@@ -10,18 +10,20 @@ match_imdb = re.compile("^http://www.imdb.com")
 base_url = "https://letterboxd.com/"
 
 MATCH_TOTAL_MOVIES = re.compile("to see (\d+)")
-ROOT_PATH = path.dirname(path.realpath(__file__))
-c = ConfigParser()
-c.read(path.join(ROOT_PATH, "config.ini"))
 s = session()
 
 
-def main():
-    feedlen = c["default"].getint("feed_length", 20)
-    watchlist_url = c["default"].get(
-        "watchlist_url", "https://letterboxd.com/janwh/watchlist/"
-    )
-    output_file = c["default"].get("output_file", "feed.xml")
+def process(args):
+
+    watchlist_url = args.letterboxd_url.rstrip("/")
+    if not watchlist_url.startswith("https://"):
+        watchlist_url = f"{base_url}{watchlist_url}"
+    if not watchlist_url.endswith("watchlist"):
+        watchlist_url += "/watchlist"
+    watchlist_url += "/"
+
+    feedlen = args.max_length
+    output_file = args.output
     page_title = "The Dude's Watchlist"
 
     feed = FeedGenerator()
