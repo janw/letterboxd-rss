@@ -4,6 +4,14 @@ version = "0.1.0"
 description = "Generate an RSS feed from your letterboxd.com watchlist"
 authors = ["Jan Willhaus <mail@janwillhaus.de>"]
 license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/janw/letterboxd-rss"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Topic :: Internet",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content :: News/Diary",
+]
 
 [tool.poetry.dependencies]
 python = "^3.5"
