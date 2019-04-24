@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "letterboxd-rss"
+version = "0.1.0"
+description = "Generate an RSS feed from your letterboxd.com watchlist"
+authors = ["Jan Willhaus <mail@janwillhaus.de>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = "^3.5"
+beautifulsoup4 = "^4.7"
+requests = "^2.21"
+feedgen = "^0.7.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^4.4"
+pytest-cov = "^2.6"
+pytest-vcr = "^1.0"
+pytest-mock = "^1.10"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
