@@ -17,7 +17,7 @@ classifiers = [
 python = "^3.5"
 beautifulsoup4 = "^4.7"
 requests = "^2.21"
-feedgen = "^0.7.0"
+feedgen = ">=0.7,<0.10"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.4"
