@@ -22,6 +22,7 @@ def main(argv=None):
         "--max-length",
         metavar="FEED_LENGTH",
         default=20,
+        type=int,
         help="Maximum number of watchlist items to keep in the feed",
     )
     args = parser.parse_args(argv)

@@ -1,15 +1,15 @@
-from os import path
 import re
-from configparser import ConfigParser
 
 from requests import session
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 
-match_imdb = re.compile("^http://www.imdb.com")
+match_imdb = re.compile(r"^https?://www.imdb.com")
+match_tmdb = re.compile(r"^https?://www.themoviedb.org")
+
 base_url = "https://letterboxd.com/"
 
-MATCH_TOTAL_MOVIES = re.compile("to see (\d+)")
+MATCH_TOTAL_MOVIES = re.compile(r"to see (\d+)")
 s = session()
 
 
@@ -43,10 +43,12 @@ def process(args):
     if len(m) > 0:
         total_movies = MATCH_TOTAL_MOVIES.search(m).group(1)
         total_movies = int(total_movies)
+        print(f"Found a total of {total_movies} movies")
 
     last_page = soup.find_all("li", attrs={"class": "paginate-page"})[-1].text
     last_page = int(last_page)
 
+    movies_added = 0
     for page in range(1, last_page):
         if page > 1:
             r = s.get(watchlist_url + "/page/%i/" % page)
@@ -57,13 +59,22 @@ def process(args):
         movies = ul.find_all("li")
         movies_on_page = len(movies)
 
-        print("Gathering on page %i (%i movies)" % (page, movies_on_page))
-        print()
+        print(f"Gathering on page {page} (contains {movies_on_page} movies)\n")
 
         for movie in movies:
-            extract_metadata(movie, feed)
+            added = extract_metadata(movie, feed)
 
-    if total_movies > 0:
+            # Update total counter
+            movies_added += added
+            if feedlen > 0 and movies_added >= feedlen:
+                print("\nReached desired maximum feed length")
+                break
+
+        if feedlen > 0 and movies_added >= feedlen:
+            break
+
+    if movies_added > 0:
+        print(f"Writing feed to {output_file}")
         feed.rss_file(output_file)
 
 
@@ -76,17 +87,26 @@ def extract_metadata(movie, feed):
         movie_title = movie_soup.find("meta", attrs={"property": "og:title"}).attrs[
             "content"
         ]
-        movie_link = movie_soup.find("a", attrs={"href": match_imdb}).attrs["href"]
-        movie_link = movie_link[:-11]
-        movie_description = movie_soup.find("div", attrs={"class": "truncate"})
+        print("Adding", movie_title)
+        movie_link = movie_soup.find(
+            "a", attrs={"href": [match_imdb, match_tmdb]}
+        ).attrs["href"]
+        if movie_link.endswith("/maindetails"):
+            movie_link = movie_link[:-11]
+        movie_description = movie_soup.find(
+            "meta", attrs={"property": "og:description"}
+        )
         if movie_description is not None:
             movie_description = movie_description.text.strip()
-        print(movie_title)
-    except AttributeError:
+
+        item = feed.add_item()
+        item.title(movie_title)
+        item.description(movie_description)
+        item.link(href=movie_link, rel="alternate")
+        item.guid(movie_link)
+
+        return 1
+    except Exception:
         print("Parsing failed on", base_url + movie_slug)
 
-    item = feed.add_item()
-    item.title(movie_title)
-    item.description(movie_description)
-    item.link(href=movie_link, rel="alternate")
-    item.guid(movie_link)
+    return 0
