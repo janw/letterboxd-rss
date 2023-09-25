@@ -80,7 +80,8 @@ def process(args):
 
 def extract_metadata(movie, feed):
     movie_slug = movie.div.attrs["data-film-slug"]
-    movie_page = s.get(base_url + movie_slug)
+    film_path = 'film/'
+    movie_page = s.get(base_url + film_path + movie_slug)
     movie_soup = BeautifulSoup(movie_page.text, "html.parser")
 
     try:
