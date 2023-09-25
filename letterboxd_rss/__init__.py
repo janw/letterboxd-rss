@@ -34,15 +34,15 @@ def process(args):
 
     # Get first page, gather general data
     r = s.get(watchlist_url)
+    r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
 
     watchlist_title = soup.find("meta", attrs={"property": "og:title"})
     page_title = watchlist_title.attrs["content"]
 
-    m = soup.find(text=MATCH_TOTAL_MOVIES)
+    m = soup.find("span", attrs={"class": "js-watchlist-count"})
     if len(m) > 0:
-        total_movies = MATCH_TOTAL_MOVIES.search(m).group(1)
-        total_movies = int(total_movies)
+        total_movies = int(m.text.split()[0])
         print(f"Found a total of {total_movies} movies")
 
     last_page = soup.find_all("li", attrs={"class": "paginate-page"})[-1].text
@@ -79,9 +79,8 @@ def process(args):
 
 
 def extract_metadata(movie, feed):
-    movie_slug = movie.div.attrs["data-film-slug"]
-    film_path = 'film/'
-    movie_page = s.get(base_url + film_path + movie_slug)
+    movie_url = base_url +"film/"+ movie.div.attrs["data-film-slug"]
+    movie_page = s.get(movie_url)
     movie_soup = BeautifulSoup(movie_page.text, "html.parser")
 
     try:
@@ -108,6 +107,6 @@ def extract_metadata(movie, feed):
 
         return 1
     except Exception:
-        print("Parsing failed on", base_url + movie_slug)
+        print("Parsing failed on", movie_url)
 
     return 0
