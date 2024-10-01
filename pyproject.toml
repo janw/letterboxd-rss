@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "letterboxd-rss"
-version = "0.2.2"
+version = "0.3.0"
 description = "Generate an RSS feed from your letterboxd.com watchlist"
 authors = ["Jan Willhaus <mail@janwillhaus.de>"]
 license = "Apache-2.0"
@@ -38,7 +38,7 @@ version_files = [
 annotated_tag = true
 tag_format = "v$version"
 update_changelog_on_bump = true
-changelog_start_rev = "0.2.2"
+changelog_start_rev = "0.3.0"
 gpg_sign = true
 
 [build-system]
