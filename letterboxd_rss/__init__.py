@@ -45,11 +45,12 @@ def process(args):
         total_movies = int(m.text.split()[0])
         print(f"Found a total of {total_movies} movies")
 
-    last_page = soup.find_all("li", attrs={"class": "paginate-page"})[-1].text
-    last_page = int(last_page)
+    paginator = soup.find_all("li", attrs={"class": "paginate-page"})
+    page_count = int(paginator[-1].text) if paginator else 1
+    last_page_index = page_count + 1
 
     movies_added = 0
-    for page in range(1, last_page):
+    for page in range(1, last_page_index):
         if page > 1:
             r = s.get(watchlist_url + "/page/%i/" % page)
             soup = BeautifulSoup(r.text, "html.parser")
