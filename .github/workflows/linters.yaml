@@ -1,0 +1,8 @@
+name: Linters
+
+on:
+  pull_request:
+
+jobs:
+  commitizen:
+    uses: janw/workflows/.github/workflows/commitizen.yaml@main

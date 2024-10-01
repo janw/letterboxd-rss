@@ -9,12 +9,10 @@ match_tmdb = re.compile(r"^https?://www.themoviedb.org")
 
 base_url = "https://letterboxd.com/"
 
-MATCH_TOTAL_MOVIES = re.compile(r"to see (\d+)")
 s = session()
 
 
 def process(args):
-
     watchlist_url = args.letterboxd_url.rstrip("/")
     if not watchlist_url.startswith("https://"):
         watchlist_url = f"{base_url}{watchlist_url}"
@@ -80,7 +78,7 @@ def process(args):
 
 
 def extract_metadata(movie, feed):
-    movie_url = base_url +"film/"+ movie.div.attrs["data-film-slug"]
+    movie_url = base_url + "film/" + movie.div.attrs["data-film-slug"]
     movie_page = s.get(movie_url)
     movie_soup = BeautifulSoup(movie_page.text, "html.parser")
 
