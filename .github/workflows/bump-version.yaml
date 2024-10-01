@@ -1,0 +1,14 @@
+name: Bump version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump-version:
+    uses: janw/workflows/.github/workflows/commitizen-bump-version.yaml@main
+    secrets:
+      personal-access-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+      gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
