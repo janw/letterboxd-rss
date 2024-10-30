@@ -1,9 +1,12 @@
-import sys
+from __future__ import annotations
+
 import argparse
-from letterboxd_rss import process
+from typing import List, Optional
+
+from letterboxd_rss.base import process
 
 
-def main(argv=None):
+def main(argv: Optional[List[str]] = None) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "letterboxd_url",
@@ -26,7 +29,8 @@ def main(argv=None):
         help="Maximum number of watchlist items to keep in the feed",
     )
     args = parser.parse_args(argv)
-    process(args)
-
-
-main(sys.argv[1:])
+    process(
+        letterboxd_url=args.letterboxd_url,
+        output_file=args.output,
+        max_length=args.max_length,
+    )

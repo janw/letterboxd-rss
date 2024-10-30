@@ -15,31 +15,85 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-beautifulsoup4 = "^4.12"
-requests = "^2.32"
+beautifulsoup4 = "^4"
+requests = "^2"
 feedgen = "^1.0"
 
 [tool.poetry.group.dev.dependencies]
-commitizen = "^3.29.1"
-ruff = "0.3.5"
-pre-commit = "^3.6.0"
-mypy = "^1.8.0"
-types-beautifulsoup4 = "*"
+commitizen = "^3"
+ruff = "0.7.1"
+pre-commit = "^4"
+mypy = "^1"
+types-requests = "*"
+ipdb = "*"
+ipython = "<8.30"
 
 [tool.poetry.scripts]
-letterboxd-rss = "letterboxd_rss.__main__:main"
+letterboxd-rss = "letterboxd_rss.cli:main"
 
 [tool.commitizen]
 version_scheme = "semver"
 version_provider = "poetry"
 version_files = [
     "pyproject.toml:version = ",
+    "letterboxd_rss/__init__.py",
 ]
 annotated_tag = true
 tag_format = "v$version"
 update_changelog_on_bump = true
 changelog_start_rev = "0.3.0"
 gpg_sign = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+lint.extend-select = [
+    "I",   # isort
+    "B",   # bugbear
+    "A",   # builtins
+    "ISC", # implicit-str-concat
+    "Q",   # quotes
+    "TID", # tidy-imports
+    "C4",  # comprehensions
+    "SIM", # simplify
+    "C90", # mccabe
+    "FA",  # future-annotations
+    "TCH", # type-checking
+    "RUF", # ruff-specific
+]
+lint.ignore = [
+    "SIM108", # if-else-block-instead-of-if-exp
+    "ISC001", # single-line-implicit-string-concatenation
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 8
+
+[tool.mypy]
+disallow_untyped_defs = true
+disallow_any_generics = true
+disallow_untyped_calls = true
+disallow_incomplete_defs = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_optional = true
+strict_equality = true
+check_untyped_defs = true
+no_implicit_reexport = true
+
+packages = ["letterboxd_rss"]
+
+[[tool.mypy.overrides]]
+module = [
+    "feedgen.*",
+    "bs4.*",
+]
+ignore_missing_imports = true
+
 
 [build-system]
 requires = ["poetry>=0.12"]
