@@ -6,3 +6,49 @@ on:
 jobs:
   commitizen:
     uses: janw/workflows/.github/workflows/commitizen.yaml@main
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.BOT_PERSONAL_ACCESS_TOKEN }}
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up python environment
+        uses: actions/setup-python@v5
+        with:
+          cache: poetry
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: poetry install --sync
+
+      - id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-v0|${{ steps.setup-python.outputs.python-version }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - run: poetry run pre-commit run --show-diff-on-failure --color=always --all-files
+        shell: bash
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        if: >
+          always()
+          && !startsWith(github.event.head_commit.message, 'build(autofix):')
+        with:
+          commit_message: "build(autofix): Auto-fix linting issues"
+          commit_user_name: "Jan Willhaus [bot]"
+          commit_user_email: "bot@janw.xyz"
+          commit_author: Jan Willhaus [bot] <bot@janw.xyz>
+
+      - id: cache-save
+        uses: actions/cache/save@v4
+        if: always() && steps.cache-restore.outputs.cache-hit != 'true'
+        with:
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+          path: ~/.cache/pre-commit

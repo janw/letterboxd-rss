@@ -1,16 +1,15 @@
-ci:
-    autoupdate_commit_msg: 'build(pre-commit): pre-commit.ci autoupdate'
-    autoupdate_schedule: weekly
-    autofix_commit_msg: 'ci(pre-commit): auto fixes from pre-commit hooks'
-    autofix_prs: true
-
-default_install_hook_types:
-  - pre-commit
-default_stages:
-  - pre-commit
 repos:
+  - repo: meta
+    hooks:
+      - id: check-hooks-apply
+
+  - repo: https://github.com/janw/pre-commit-hooks
+    rev: v0.1.0
+    hooks:
+      - id: sync_ruff_version
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: 'v0.6.9'
+    rev: 'v0.7.1'
     hooks:
       - id: ruff
         args: [ --fix, --exit-non-zero-on-fix ]
@@ -28,4 +27,17 @@ repos:
   - repo: https://github.com/python-poetry/poetry
     rev: '1.8.0'
     hooks:
+      - id: poetry-lock
+        args:
+          - --no-update
       - id: poetry-check
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy
+        language: system
+        require_serial: true
+        pass_filenames: false
+        types: [python]
